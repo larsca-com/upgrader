@@ -12,8 +12,11 @@ T? ambiguate<T>(T? value) => value;
 
 /// The message identifiers used in upgrader.
 enum UpgraderMessage {
-  /// Body of the upgrade message
-  body,
+  /// Body of the optional upgrade message
+  bodyOptionalUpdate,
+
+  /// Body of the critical upgrade message
+  bodyCriticalUpdate,
 
   /// Ignore button
   buttonTitleIgnore,
@@ -61,7 +64,9 @@ class UpgraderMessages {
   /// Override the message function to provide custom language localization.
   String? message(UpgraderMessage messageKey) {
     switch (messageKey) {
-      case UpgraderMessage.body:
+      case UpgraderMessage.bodyOptionalUpdate:
+        return body;
+      case UpgraderMessage.bodyCriticalUpdate:
         return body;
       case UpgraderMessage.buttonTitleIgnore:
         return buttonTitleIgnore;

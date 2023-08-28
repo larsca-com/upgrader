@@ -429,7 +429,9 @@ class Upgrader {
   String? get releaseNotes => _releaseNotes;
 
   String message() {
-    var msg = messages.message(UpgraderMessage.body)!;
+    var msg = messages.message(blocked()
+        ? UpgraderMessage.bodyCriticalUpdate
+        : UpgraderMessage.bodyOptionalUpdate)!;
     msg = msg.replaceAll('{{appName}}', appName());
     msg = msg.replaceAll(
         '{{currentAppStoreVersion}}', currentAppStoreVersion() ?? '');
