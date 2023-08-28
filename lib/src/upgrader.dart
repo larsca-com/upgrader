@@ -428,16 +428,21 @@ class Upgrader {
 
   String? get releaseNotes => _releaseNotes;
 
-  String message() {
-    var msg = messages.message(blocked()
-        ? UpgraderMessage.bodyCriticalUpdate
-        : UpgraderMessage.bodyOptionalUpdate)!;
+  String? _formatMessage(String? msg) {
+    if (msg == null) return null;
     msg = msg.replaceAll('{{appName}}', appName());
     msg = msg.replaceAll(
         '{{currentAppStoreVersion}}', currentAppStoreVersion() ?? '');
     msg = msg.replaceAll(
         '{{currentInstalledVersion}}', currentInstalledVersion() ?? '');
     return msg;
+  }
+
+  String message() {
+    var msg = messages.message(blocked()
+        ? UpgraderMessage.bodyCriticalUpdate
+        : UpgraderMessage.bodyOptionalUpdate)!;
+    return _formatMessage(msg)!;
   }
 
   /// Only called by [UpgradeAlert].
@@ -453,7 +458,7 @@ class Upgrader {
         Future.delayed(const Duration(milliseconds: 0), () {
           _showDialog(
               context: context,
-              title: messages.message(UpgraderMessage.title),
+              title: _formatMessage(messages.message(UpgraderMessage.title)),
               message: message(),
               releaseNotes: shouldDisplayReleaseNotes() ? _releaseNotes : null,
               canDismissDialog: canDismissDialog);
@@ -672,8 +677,12 @@ class Upgrader {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(messages.message(UpgraderMessage.releaseNotes) ?? '',
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(
+                _formatMessage(
+                        messages.message(UpgraderMessage.releaseNotes)) ??
+                    '',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               Text(releaseNotes),
             ],
           ));
@@ -689,8 +698,11 @@ class Upgrader {
             children: <Widget>[
               Text(message),
               Padding(
-                  padding: const EdgeInsets.only(top: 15.0),
-                  child: Text(messages.message(UpgraderMessage.prompt) ?? '')),
+                padding: const EdgeInsets.only(top: 15.0),
+                child: Text(
+                    _formatMessage(messages.message(UpgraderMessage.prompt)) ??
+                        ''),
+              ),
               if (notes != null) notes,
             ],
           ))),
@@ -706,8 +718,9 @@ class Upgrader {
                   messages.message(UpgraderMessage.buttonTitleLater) ?? ''),
               onPressed: () => onUserLater(context, true)),
         TextButton(
-            child:
-                Text(messages.message(UpgraderMessage.buttonTitleUpdate) ?? ''),
+            child: Text(_formatMessage(
+                    messages.message(UpgraderMessage.buttonTitleUpdate)) ??
+                ''),
             onPressed: () => onUserUpdated(context, !blocked())),
       ],
     );
@@ -721,8 +734,12 @@ class Upgrader {
           padding: const EdgeInsets.only(top: 15.0),
           child: Column(
             children: <Widget>[
-              Text(messages.message(UpgraderMessage.releaseNotes) ?? '',
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(
+                _formatMessage(
+                        messages.message(UpgraderMessage.releaseNotes)) ??
+                    '',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               Text(
                 releaseNotes,
                 maxLines: 14,
@@ -740,7 +757,9 @@ class Upgrader {
           Text(message),
           Padding(
               padding: const EdgeInsets.only(top: 15.0),
-              child: Text(messages.message(UpgraderMessage.prompt) ?? '')),
+              child: Text(
+                  _formatMessage(messages.message(UpgraderMessage.prompt)) ??
+                      '')),
           if (notes != null) notes,
         ],
       ),
@@ -760,8 +779,11 @@ class Upgrader {
         CupertinoDialogAction(
             textStyle: cupertinoButtonTextStyle,
             isDefaultAction: true,
-            child:
-                Text(messages.message(UpgraderMessage.buttonTitleUpdate) ?? ''),
+            child: Text(
+              _formatMessage(
+                      messages.message(UpgraderMessage.buttonTitleUpdate)) ??
+                  '',
+            ),
             onPressed: () => onUserUpdated(context, !blocked())),
       ],
     );
