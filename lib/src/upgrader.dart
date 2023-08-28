@@ -25,6 +25,12 @@ typedef BoolCallback = bool Function();
 /// Signature of callbacks that have a bool argument and no return.
 typedef VoidBoolCallback = void Function(bool value);
 
+/// Signature of callback for willForceUpgrade
+typedef WillForceUpgradeCallback = bool Function({
+  String? installedVersion,
+  String? appStoreVersion,
+});
+
 /// Signature of callback for willDisplayUpgrade. Includes display,
 /// minAppVersion, installedVersion, and appStoreVersion.
 typedef WillDisplayUpgradeCallback = void Function(
@@ -94,6 +100,9 @@ class Upgrader {
   /// The minimum app version supported by this app. Earlier versions of this app
   /// will be forced to update to the current version. Optional.
   String? minAppVersion;
+
+  /// Called when [Upgrader] determines that if the current upgrade is critical.
+  WillForceUpgradeCallback? willForceUpgrade;
 
   /// Called when the ignore button is tapped or otherwise activated.
   /// Return false when the default behavior should not execute.
@@ -182,6 +191,7 @@ class Upgrader {
     this.countryCode,
     this.languageCode,
     this.minAppVersion,
+    this.willForceUpgrade,
     this.dialogStyle = UpgradeDialogStyle.material,
     this.cupertinoButtonTextStyle,
     TargetPlatform? platform,
@@ -451,7 +461,13 @@ class Upgrader {
   }
 
   bool blocked() {
-    return belowMinAppVersion() || _isCriticalUpdate;
+    return belowMinAppVersion() ||
+        _isCriticalUpdate ||
+        (willForceUpgrade?.call(
+              appStoreVersion: _appStoreVersion,
+              installedVersion: _installedVersion,
+            ) ??
+            false);
   }
 
   bool shouldDisplayUpgrade() {
